@@ -3,18 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
+    <title>Smart Todo List</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Todo List</h1>
-        <div class="input-container">
-            <input type="text" id="todoInput" placeholder="Enter a new task">
-            <button id="addButton">Add</button>
-        </div>
-        <ul id="todoList"></ul>
+        <header>
+            <h1>Smart Todo List</h1>
+        </header>
+        
+        <main>
+            <!-- Name input section -->
+            <section id="nameContainer" class="section-container">
+                <div class="input-group">
+                    <input type="text" id="nameInput" placeholder="Enter your name" aria-label="Your name" autocomplete="off" spellcheck="false">
+                    <button id="saveName" class="btn primary-btn">Get Started</button>
+                </div>
+            </section>
+
+            <!-- Todo list section -->
+            <section id="todoContainer" class="section-container" style="display: none;">
+                <div class="input-group">
+                    <input type="text" id="todoInput" placeholder="What needs to be done?" aria-label="New todo item">
+                    <button id="addButton" class="btn primary-btn">Add</button>
+                </div>
+
+                <div class="todo-list-container">
+                    <ul id="todoList" class="todo-list" aria-label="Todo items list"></ul>
+                </div>
+
+                <div class="controls">
+                    <p id="todoStats" class="stats"></p>
+                    <button onclick="clearCompletedTasks()" class="btn secondary-btn">Clear Completed</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p class="footer-text">Made with ❤️ for better productivity</p>
+        </footer>
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
