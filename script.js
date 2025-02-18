@@ -1,72 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const elements = {
-        nameInput: document.getElementById('nameInput'),
-        saveNameButton: document.getElementById('saveName'),
         todoInput: document.getElementById('todoInput'),
         addButton: document.getElementById('addButton'),
         todoList: document.getElementById('todoList'),
-        nameContainer: document.getElementById('nameContainer'),
-        todoContainer: document.getElementById('todoContainer'),
         todoStats: document.getElementById('todoStats')
     };
 
-    // State
-    let username = localStorage.getItem('username') || '';
-    
     // Initial setup
-    if (username) {
-        loadTodos();
-        showTodoSection();
-        updateStats();
-    } else {
-        askForName();
-    }
+    loadTodos();
+    updateStats();
 
     // Event Listeners
-    elements.saveNameButton.addEventListener('click', handleNameSubmit);
-    elements.nameInput.addEventListener('keypress', e => {
-        if (e.key === 'Enter') handleNameSubmit();
-    });
-
     elements.addButton.addEventListener('click', addTodo);
     elements.todoInput.addEventListener('keypress', e => {
         if (e.key === 'Enter') addTodo();
     });
 
     // Functions
-    function handleNameSubmit() {
-        const newUsername = elements.nameInput.value.trim();
-        console.log('Submitting name:', newUsername);
-        if (newUsername.length >= 2) {
-            username = newUsername;
-            localStorage.setItem('username', username);
-            elements.nameInput.value = ''; // Clear the input
-            elements.nameInput.blur(); // Remove focus
-            loadTodos();
-            showTodoSection();
-            updateStats();
-        } else {
-            elements.nameInput.classList.add('error');
-            elements.nameInput.placeholder = 'Name must be at least 2 characters';
-            setTimeout(() => {
-                elements.nameInput.classList.remove('error');
-                elements.nameInput.placeholder = 'Enter your name';
-            }, 2000);
-        }
-    }
-
-    function askForName() {
-        elements.nameContainer.style.display = 'block';
-        elements.todoContainer.style.display = 'none';
-    }
-
-    function showTodoSection() {
-        elements.nameContainer.style.display = 'none';
-        elements.todoContainer.style.display = 'block';
-        elements.todoInput.focus();
-    }
-
     function loadTodos() {
         const todos = getTodosFromStorage();
         renderTodos(todos);
@@ -170,11 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getTodosFromStorage() {
-        return JSON.parse(localStorage.getItem(`todos_${username}`)) || [];
+        return JSON.parse(localStorage.getItem('todos')) || [];
     }
 
     function saveTodos(todos) {
-        localStorage.setItem(`todos_${username}`, JSON.stringify(todos));
+        localStorage.setItem('todos', JSON.stringify(todos));
     }
 
     // Clear completed todos
