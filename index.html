@@ -3,37 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Todo List</title>
+    <title>DoToday - Smart Todo List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
+        <div class="theme-toggle">
+            <button id="themeToggle" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
         <header>
-            <h1>DoToday</h1>
+            <div class="logo">
+                <i class="fas fa-check-circle"></i>
+                <h1>DoToday</h1>
+            </div>
+            <p class="tagline">Organize your tasks, simplify your life</p>
         </header>
         
         <main>
-            <!-- Todo list section -->
-            <section id="todoContainer" class="section-container">
+            <!-- Todo input section -->
+            <section id="todoInputSection" class="section-container">
                 <div class="input-group">
                     <input type="text" id="todoInput" placeholder="What needs to be done?" aria-label="New todo item">
-                    <button id="addButton" class="btn primary-btn">Add</button>
+                    <div class="todo-options">
+                        <div class="dropdown">
+                            <button id="priorityDropdown" class="dropdown-btn" aria-label="Set priority">
+                                <i class="fas fa-flag"></i>
+                                <span id="selectedPriority">Normal</span>
+                            </button>
+                            <div class="dropdown-content priority-dropdown">
+                                <div class="dropdown-item" data-value="low">
+                                    <i class="fas fa-flag priority-low"></i> Low
+                                </div>
+                                <div class="dropdown-item" data-value="normal">
+                                    <i class="fas fa-flag priority-normal"></i> Normal
+                                </div>
+                                <div class="dropdown-item" data-value="high">
+                                    <i class="fas fa-flag priority-high"></i> High
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown">
+                            <button id="categoryDropdown" class="dropdown-btn" aria-label="Set category">
+                                <i class="fas fa-tag"></i>
+                                <span id="selectedCategory">None</span>
+                            </button>
+                            <div class="dropdown-content category-dropdown">
+                                <div class="dropdown-item" data-value="none">None</div>
+                                <div class="dropdown-item" data-value="work">
+                                    <i class="fas fa-briefcase"></i> Work
+                                </div>
+                                <div class="dropdown-item" data-value="personal">
+                                    <i class="fas fa-user"></i> Personal
+                                </div>
+                                <div class="dropdown-item" data-value="shopping">
+                                    <i class="fas fa-shopping-cart"></i> Shopping
+                                </div>
+                                <div class="dropdown-item" data-value="health">
+                                    <i class="fas fa-heartbeat"></i> Health
+                                </div>
+                                <div class="dropdown-item add-category">
+                                    <i class="fas fa-plus"></i> Add New...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="date" id="dueDatePicker" class="date-picker" aria-label="Set due date">
+                    </div>
+                    <button id="addButton" class="btn primary-btn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+            </section>
+
+            <!-- Todo list section -->
+            <section id="todoContainer" class="section-container">
+                <div class="filters">
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search tasks..." aria-label="Search tasks">
+                    </div>
+                    
+                    <div class="filter-options">
+                        <div class="filter-group">
+                            <label for="filterStatus">Status:</label>
+                            <select id="filterStatus" aria-label="Filter by status">
+                                <option value="all">All</option>
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filterCategory">Category:</label>
+                            <select id="filterCategory" aria-label="Filter by category">
+                                <option value="all">All</option>
+                                <option value="none">None</option>
+                                <option value="work">Work</option>
+                                <option value="personal">Personal</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="health">Health</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="filterPriority">Priority:</label>
+                            <select id="filterPriority" aria-label="Filter by priority">
+                                <option value="all">All</option>
+                                <option value="low">Low</option>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="sortBy">Sort by:</label>
+                            <select id="sortBy" aria-label="Sort tasks">
+                                <option value="dateCreated">Date Created</option>
+                                <option value="dueDate">Due Date</option>
+                                <option value="priority">Priority</option>
+                                <option value="alphabetical">Alphabetical</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="todo-list-container">
                     <ul id="todoList" class="todo-list" aria-label="Todo items list"></ul>
+                    <div id="emptyState" class="empty-state hidden">
+                        <i class="fas fa-clipboard-check empty-icon"></i>
+                        <p>No tasks found</p>
+                        <p class="empty-subtext">Add a new task or change your filters</p>
+                    </div>
                 </div>
 
                 <div class="controls">
                     <p id="todoStats" class="stats"></p>
-                    <button onclick="clearCompletedTasks()" class="btn secondary-btn">Clear Completed</button>
+                    <div class="action-buttons">
+                        <button id="clearCompletedBtn" class="btn secondary-btn">
+                            <i class="fas fa-trash-alt"></i> Clear Completed
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
 
         <footer>
-            <p class="footer-text">Made with ❤️ for better productivity</p>
+            <p class="footer-text">Made with <i class="fas fa-heart"></i> for better productivity</p>
+            <p class="version">v2.0</p>
         </footer>
+    </div>
+    
+    <!-- Task edit modal -->
+    <div id="editTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Task</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editTaskText">Task:</label>
+                    <input type="text" id="editTaskText" class="full-width">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTaskPriority">Priority:</label>
+                        <select id="editTaskPriority">
+                            <option value="low">Low</option>
+                            <option value="normal">Normal</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskCategory">Category:</label>
+                        <select id="editTaskCategory">
+                            <option value="none">None</option>
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="health">Health</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTaskDueDate">Due Date:</label>
+                    <input type="date" id="editTaskDueDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editTaskNotes">Notes:</label>
+                    <textarea id="editTaskNotes" rows="3" class="full-width"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveTaskBtn" class="btn primary-btn">Save Changes</button>
+                <button id="cancelEditBtn" class="btn secondary-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add category modal -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Category</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newCategoryName">Category Name:</label>
+                    <input type="text" id="newCategoryName" class="full-width">
+                </div>
+                
+                <div class="form-group">
+                    <label>Icon:</label>
+                    <div class="icon-selector">
+                        <div class="icon-option" data-icon="fas fa-home"><i class="fas fa-home"></i></div>
+                        <div class="icon-option" data-icon="fas fa-book"><i class="fas fa-book"></i></div>
+                        <div class="icon-option" data-icon="fas fa-car"><i class="fas fa-car"></i></div>
+                        <div class="icon-option" data-icon="fas fa-plane"><i class="fas fa-plane"></i></div>
+                        <div class="icon-option" data-icon="fas fa-utensils"><i class="fas fa-utensils"></i></div>
+                        <div class="icon-option" data-icon="fas fa-graduation-cap"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="icon-option" data-icon="fas fa-music"><i class="fas fa-music"></i></div>
+                        <div class="icon-option" data-icon="fas fa-gamepad"><i class="fas fa-gamepad"></i></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newCategoryColor">Color:</label>
+                    <input type="color" id="newCategoryColor" value="#4A90E2">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="saveCategoryBtn" class="btn primary-btn">Add Category</button>
+                <button id="cancelCategoryBtn" class="btn secondary-btn">Cancel</button>
+            </div>
+        </div>
     </div>
     
     <script src="script.js"></script>
